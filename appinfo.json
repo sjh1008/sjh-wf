@@ -1,0 +1,19 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "holden.steve@gmail.com",
+    "longName": "wf1",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "shortName": "wf1",
+    "uuid": "46f75d27-e651-458f-849a-a074c127240c",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
