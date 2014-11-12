@@ -1,19 +1,34 @@
 {
-    "appKeys": {},
-    "capabilities": [
-        ""
-    ],
-    "companyName": "holden.steve@gmail.com",
-    "longName": "wf1",
-    "projectType": "native",
-    "resources": {
-        "media": []
-    },
-    "shortName": "wf1",
-    "uuid": "46f75d27-e651-458f-849a-a074c127240c",
-    "versionCode": 1,
-    "versionLabel": "1.0",
-    "watchapp": {
-        "watchface": false
-    }
+  "uuid": "1e093b6e-3354-42c7-9d7b-4bb03cd2cb73",
+  "shortName": "pebbleWf",
+  "longName": "pebbleWf",
+  "companyName": "MakeAwesomeHappen",
+  "versionCode": 1,
+  "versionLabel": "1.0",
+  "watchapp": {
+    "watchface": false
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": [ 
+      {
+        "characterRegex": "[:0-9]",
+        "type": "font",
+        "name": "FONT_PERFECT_DOS_48",
+        "file": "fonts/big.ttf"
+      } ,
+      {
+        "characterRegex": "[:0-9]",
+        "type": "font",
+        "name": "FONT_PERFECT_DOS_20",
+        "file": "fonts/big.ttf"
+      } ,      {
+        "type": "png",
+        "name": "IMG_BACKGROUND",
+        "file": "img/background.png"
+      }
+    ]
+  }
 }
