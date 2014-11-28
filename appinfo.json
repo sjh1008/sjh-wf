@@ -1,34 +1,40 @@
 {
-  "uuid": "1e093b6e-3354-42c7-9d7b-4bb03cd2cb73",
-  "shortName": "pebbleWf",
-  "longName": "pebbleWf",
-  "companyName": "Steve Testing",
-  "versionCode": 1,
-  "versionLabel": "1.0",
-  "watchapp": {
-    "watchface": false
-  },
-  "appKeys": {
-    "dummy": 0
-  },
-  "resources": {
-    "media": [ 
-      {
-        "characterRegex": "[:0-9]",
-        "type": "font",
-        "name": "FONT_PERFECT_DOS_48",
-        "file": "fonts/big.ttf"
-      } ,
-      {
-        "characterRegex": "[:0-9]",
-        "type": "font",
-        "name": "FONT_PERFECT_DOS_20",
-        "file": "fonts/big.ttf"
-      } ,      {
-        "type": "png",
-        "name": "IMG_BACKGROUND",
-        "file": "img/background.png"
-      }
-    ]
-  }
+    "appKeys": {
+        "KEY_CONDITIONS": 1,
+        "KEY_TEMPERATURE": 0
+    },
+    "capabilities": [
+        "location"
+    ],
+    "companyName": "Steve Testing",
+    "longName": "sjh-pebbleWf-weather",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/background.png",
+                "name": "IMG_BACKGROUND",
+                "type": "png"
+            },
+            {
+                "characterRegex": "[:0-9]",
+                "file": "fonts/big.ttf",
+                "name": "FONT_PERFECT_DOS_20",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[:0-9]",
+                "file": "fonts/big.ttf",
+                "name": "FONT_PERFECT_DOS_48",
+                "type": "font"
+            }
+        ]
+    },
+    "shortName": "sjhWf",
+    "uuid": "11111111-2222-42c7-9d7b-4bb03cd2cb73",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
 }
