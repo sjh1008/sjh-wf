@@ -15,6 +15,10 @@ static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap;
 static TextLayer *s_time_layer;
 static TextLayer *s_weather_layer;
+// Store incoming information
+static char temperature_buffer[8];
+static char conditions_buffer[32];
+static char weather_layer_buffer[32];
 
 static void update_time() {
   // Get a tm structure
@@ -77,8 +81,9 @@ text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
 text_layer_set_text(s_weather_layer, "Loading...");
 
   // Create second custom font, apply it and add to Window
-s_weather_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_20));
-text_layer_set_font(s_weather_layer, s_weather_font);
+//s_weather_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_20));
+text_layer_set_font(s_weather_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+
 layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
 
   // Make sure the time is displayed from the start
@@ -99,7 +104,30 @@ fonts_unload_custom_font(s_weather_font);
 }
 
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
+  // Read first item
+  Tuple *t = dict_read_first(iterator);
 
+  // For all items
+  while(t != NULL) {
+    // Which key was received?
+    switch(t->key) {
+case KEY_TEMPERATURE:
+  snprintf(temperature_buffer, sizeof(temperature_buffer), "%dC", (int)t->value->int32);
+  break;
+case KEY_CONDITIONS:
+  snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", t->value->cstring);
+  break;
+default:
+  APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
+  break;
+    }
+
+    // Look for next item
+    t = dict_read_next(iterator);
+  }
+// Assemble full string and display
+snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s, %s", temperature_buffer, conditions_buffer);
+text_layer_set_text(s_weather_layer, weather_layer_buffer);
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {
