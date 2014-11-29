@@ -35,6 +35,7 @@ static int latitude;
 static int longitude;
 static char longhemisphere;
 static char lathemisphere;
+static int32_t tm;
 
 static void update_time() {
   // Get a tm structure
@@ -58,10 +59,11 @@ static void update_time() {
 }
 
 static void update_layer_callback(Layer *layer, GContext* ctx) {
-  graphics_context_set_text_color(ctx, GColorBlack);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "In update layer");
+  graphics_context_set_text_color(ctx, GColorWhite);
   GRect bounds = layer_get_frame(layer);
   graphics_draw_text(ctx,
-    "Text here.",
+    location_layer_buffer,
     fonts_get_system_font(FONT_KEY_FONT_FALLBACK),
     GRect(5, 5, bounds.size.w-10, 100),
     GTextOverflowModeWordWrap,
@@ -109,7 +111,7 @@ text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
 text_layer_set_text(s_weather_layer, " ");
   
     // Create location Layer
-s_loc_layer = layer_create(GRect(0, 0, 144, 25));
+s_loc_layer = layer_create(GRect(0, 0, 144, 50));
 layer_set_update_proc(s_loc_layer, update_layer_callback);
 
 //text_layer_set_background_color(s_loc_layer, GColorClear);
@@ -168,7 +170,7 @@ case KEY_LAT:
   } else {
     lathemisphere='N';
   }
-  snprintf(lat_buffer, sizeof(lat_buffer), "%d.%02d%c", latitude/100, (latitude)%100,lathemisphere);
+  snprintf(lat_buffer, sizeof(lat_buffer), "%d.%02d%c", latitude/1000, (latitude)%1000,lathemisphere);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Key lat %d ", latitude);
   break;
 case KEY_LONG:
@@ -179,29 +181,31 @@ case KEY_LONG:
   } else {
     longhemisphere='E';
   }
-  snprintf(long_buffer, sizeof(long_buffer), "%d.%02d%c", longitude/100, (longitude)%100,longhemisphere);
+  snprintf(long_buffer, sizeof(long_buffer), "%d.%02d%c", longitude/1000, (longitude)%1000,longhemisphere);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Key long %d ",longitude);
   break;
 case KEY_TIME:
-  snprintf(weath_time_buffer, sizeof(weath_time_buffer), "%d", (int)t->value->int32);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Key time %d ",(int)t->value->int32);
+  tm = t->value->int32;
+  snprintf(weath_time_buffer, sizeof(weath_time_buffer), "%d", (int)tm);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Key time %d ",(int)tm);
+  time_t t = (time_t)tm;
   //time_t temp = time(NULL); 
-  //struct tm *tick_time = localtime(&temp);
+  struct tm *tick_time = localtime(&t);
 
   // Create a long-lived buffer
   //static char buffer[] = "00:00";
 
   // Write the current hours and minutes into the buffer
-  //if(clock_is_24h_style() == true) {
-    // Use 24 hour format
-    //strftime(buffer, sizeof("00:00"), "%H:%M", tick_time);
-  //} else {
-    // Use 12 hour format
-    //strftime(buffer, sizeof("00:00"), "%I:%M", tick_time);
-  //}      
+  if(clock_is_24h_style() == true) {
+     //Use 24 hour format
+    strftime(weath_time_buffer, sizeof("00:00"), "%H:%M", tick_time);
+  } else {
+     //Use 12 hour format
+    strftime(weath_time_buffer, sizeof("00:00"), "%I:%M", tick_time);
+  }      
   break;      
 default:
-  APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
+ // APP_LOG(APP_LOG_LEVEL_ERROR, "Key %s not recognized!", t->key);
   break;
     }
 

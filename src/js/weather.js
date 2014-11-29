@@ -32,11 +32,11 @@ function locationSuccess(pos) {
       console.log("Location is " + location);      
       
       // Conditions
-      var long = json.coord.lon*100;      
+      var long = json.coord.lon*1000;      
       console.log("Long is " + long);  
       
       // Conditions
-      var lat = json.coord.lat*100;      
+      var lat = json.coord.lat*1000;      
       console.log("Lat is " + lat);  
       // Conditions
       var time = json.dt;      

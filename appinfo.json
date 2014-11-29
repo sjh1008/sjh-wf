@@ -16,10 +16,9 @@
     "resources": {
         "media": [
             {
-                "characterRegex": "[:0-9]",
-                "file": "fonts/big.ttf",
-                "name": "FONT_PERFECT_DOS_20",
-                "type": "font"
+                "file": "images/background.png",
+                "name": "IMG_BACKGROUND",
+                "type": "png"
             },
             {
                 "characterRegex": "[:0-9]",
@@ -28,9 +27,10 @@
                 "type": "font"
             },
             {
-                "file": "images/background.png",
-                "name": "IMG_BACKGROUND",
-                "type": "png"
+                "characterRegex": "[:0-9]",
+                "file": "fonts/big.ttf",
+                "name": "FONT_PERFECT_DOS_20",
+                "type": "font"
             }
         ]
     },
