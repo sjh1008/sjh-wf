@@ -32,19 +32,23 @@ function locationSuccess(pos) {
       console.log("Location is " + location);      
       
       // Conditions
-      var long = json.coord.lon;      
+      var long = json.coord.lon*100;      
       console.log("Long is " + long);  
       
-            // Conditions
-      var lat = json.coord.lat;      
+      // Conditions
+      var lat = json.coord.lat*100;      
       console.log("Lat is " + lat);  
+      // Conditions
+      var time = json.dt;      
+      console.log("Time is " + time);       
 // Assemble dictionary using our keys
 var dictionary = {
-  "KEY_TEMPERATURE": temperature,
-  "KEY_CONDITIONS": conditions,
-  "KEY_LOCATION": location,
+  "KEY_TEMP": temperature,
+  "KEY_COND": conditions,
+  "KEY_LOC": location,
   "KEY_LAT": lat,
-  "KEY_LONG": long
+  "KEY_LONG": long,
+  "KEY_TIME": time
 };
 
 // Send to Pebble

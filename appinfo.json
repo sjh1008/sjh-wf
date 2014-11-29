@@ -1,10 +1,11 @@
 {
     "appKeys": {
-        "KEY_CONDITIONS": 1,
+        "KEY_COND": 1,
         "KEY_LAT": 3,
-        "KEY_LOCATION": 2,
+        "KEY_LOC": 2,
         "KEY_LONG": 4,
-        "KEY_TEMPERATURE": 0
+        "KEY_TEMP": 0,
+        "KEY_TIME": 5
     },
     "capabilities": [
         "location"

@@ -6,11 +6,12 @@
  */
 
 #include <pebble.h>
-#define KEY_TEMPERATURE 0
-#define KEY_CONDITIONS 1
-#define KEY_LOCATION 2
+#define KEY_TEMP 0
+#define KEY_COND 1
+#define KEY_LOC 2
 #define KEY_LAT 3
 #define KEY_LONG 4
+#define KEY_TIME 5
 
   
 static Window *s_main_window;
@@ -28,7 +29,12 @@ static char weather_layer_buffer[32];
 static char location_buffer[32];
 static char lat_buffer[10];
 static char long_buffer[10];
+static char weath_time_buffer[10];
 static char location_layer_buffer[32];
+static int latitude;
+static int longitude;
+static char longhemisphere;
+static char lathemisphere;
 
 static void update_time() {
   // Get a tm structure
@@ -88,14 +94,14 @@ s_weather_layer = text_layer_create(GRect(0, 130, 144, 25));
 text_layer_set_background_color(s_weather_layer, GColorClear);
 text_layer_set_text_color(s_weather_layer, GColorWhite);
 text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
-text_layer_set_text(s_weather_layer, "Loading...");
+text_layer_set_text(s_weather_layer, " ");
   
     // Create location Layer
 s_loc_layer = text_layer_create(GRect(0, 0, 144, 25));
 text_layer_set_background_color(s_loc_layer, GColorClear);
 text_layer_set_text_color(s_loc_layer, GColorWhite);
 text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
-text_layer_set_text(s_loc_layer, "Loading...");
+text_layer_set_text(s_loc_layer, " ");
 
   // Create second custom font, apply it and add to Window
 //s_weather_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_20));
@@ -130,21 +136,55 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   while(t != NULL) {
     // Which key was received?
     switch(t->key) {
-case KEY_TEMPERATURE:
+case KEY_TEMP:
   snprintf(temperature_buffer, sizeof(temperature_buffer), "%dC", (int)t->value->int32);
   break;
-case KEY_CONDITIONS:
+case KEY_COND:
   snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", t->value->cstring);
   break;
-case KEY_LOCATION:
+case KEY_LOC:
   snprintf(location_buffer, sizeof(location_buffer), "%s", t->value->cstring);
   break;
 case KEY_LAT:
-  snprintf(lat_buffer, sizeof(lat_buffer), "%s", t->value->cstring);
+  latitude  = (int)t->value->uint32;
+  if (latitude<0) {
+    lathemisphere='S';
+    latitude=-latitude;
+  } else {
+    lathemisphere='N';
+  }
+  snprintf(lat_buffer, sizeof(lat_buffer), "%d.%02d%c", latitude/100, (latitude)%100,lathemisphere);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Key lat %d ", latitude);
   break;
 case KEY_LONG:
-  snprintf(long_buffer, sizeof(long_buffer), "%s", t->value->cstring);
+  longitude = (int)t->value->uint32;
+  if (longitude<0) {
+    longhemisphere='W';
+    longitude=-longitude;
+  } else {
+    longhemisphere='E';
+  }
+  snprintf(long_buffer, sizeof(long_buffer), "%d.%02d%c", longitude/100, (longitude)%100,longhemisphere);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Key long %d ",longitude);
   break;
+case KEY_TIME:
+  snprintf(weath_time_buffer, sizeof(weath_time_buffer), "%d", (int)t->value->int32);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Key time %d ",(int)t->value->int32);
+  //time_t temp = time(NULL); 
+  //struct tm *tick_time = localtime(&temp);
+
+  // Create a long-lived buffer
+  //static char buffer[] = "00:00";
+
+  // Write the current hours and minutes into the buffer
+  //if(clock_is_24h_style() == true) {
+    // Use 24 hour format
+    //strftime(buffer, sizeof("00:00"), "%H:%M", tick_time);
+  //} else {
+    // Use 12 hour format
+    //strftime(buffer, sizeof("00:00"), "%I:%M", tick_time);
+  //}      
+  break;      
 default:
   APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
   break;
@@ -155,7 +195,7 @@ default:
   }
 // Assemble full string and display
 snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s, %s", temperature_buffer, conditions_buffer);
-snprintf(location_layer_buffer, sizeof(location_layer_buffer), " %s, %s, %s", location_buffer, lat_buffer, long_buffer);
+snprintf(location_layer_buffer, sizeof(location_layer_buffer), " %s, %s, %s, %s", location_buffer, lat_buffer, long_buffer, weath_time_buffer);
 text_layer_set_text(s_weather_layer, weather_layer_buffer);
   text_layer_set_text(s_loc_layer, location_layer_buffer);
 }
