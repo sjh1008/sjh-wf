@@ -8,6 +8,11 @@
 #include <pebble.h>
 #define KEY_TEMPERATURE 0
 #define KEY_CONDITIONS 1
+#define KEY_LOCATION 2
+#define KEY_LAT 3
+#define KEY_LONG 4
+
+  
 static Window *s_main_window;
 static GFont s_time_font;
 static GFont s_weather_font;
@@ -15,10 +20,15 @@ static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap;
 static TextLayer *s_time_layer;
 static TextLayer *s_weather_layer;
+static TextLayer *s_loc_layer;
 // Store incoming information
 static char temperature_buffer[8];
 static char conditions_buffer[32];
 static char weather_layer_buffer[32];
+static char location_buffer[32];
+static char lat_buffer[10];
+static char long_buffer[10];
+static char location_layer_buffer[32];
 
 static void update_time() {
   // Get a tm structure
@@ -59,12 +69,12 @@ text_layer_set_text_color(s_time_layer, GColorBlack);
 text_layer_set_text(s_time_layer, "00:00");
 
   // Create GFont
-  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_48));
+  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_48));
 
   // Improve the layout to be more like a watchface
-  //text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
+  text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49));
   // Apply to TextLayer
-  text_layer_set_font(s_time_layer, s_time_font);
+  //text_layer_set_font(s_time_layer, s_time_font);
 
   text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
 
@@ -79,13 +89,22 @@ text_layer_set_background_color(s_weather_layer, GColorClear);
 text_layer_set_text_color(s_weather_layer, GColorWhite);
 text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
 text_layer_set_text(s_weather_layer, "Loading...");
+  
+    // Create location Layer
+s_loc_layer = text_layer_create(GRect(0, 0, 144, 25));
+text_layer_set_background_color(s_loc_layer, GColorClear);
+text_layer_set_text_color(s_loc_layer, GColorWhite);
+text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
+text_layer_set_text(s_loc_layer, "Loading...");
 
   // Create second custom font, apply it and add to Window
 //s_weather_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_20));
 text_layer_set_font(s_weather_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
-
+text_layer_set_font(s_loc_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+  
 layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
-
+layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_loc_layer));
+  
   // Make sure the time is displayed from the start
   update_time();
 }
@@ -117,6 +136,15 @@ case KEY_TEMPERATURE:
 case KEY_CONDITIONS:
   snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", t->value->cstring);
   break;
+case KEY_LOCATION:
+  snprintf(location_buffer, sizeof(location_buffer), "%s", t->value->cstring);
+  break;
+case KEY_LAT:
+  snprintf(lat_buffer, sizeof(lat_buffer), "%s", t->value->cstring);
+  break;
+case KEY_LONG:
+  snprintf(long_buffer, sizeof(long_buffer), "%s", t->value->cstring);
+  break;
 default:
   APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
   break;
@@ -127,7 +155,9 @@ default:
   }
 // Assemble full string and display
 snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s, %s", temperature_buffer, conditions_buffer);
+snprintf(location_layer_buffer, sizeof(location_layer_buffer), " %s, %s, %s", location_buffer, lat_buffer, long_buffer);
 text_layer_set_text(s_weather_layer, weather_layer_buffer);
+  text_layer_set_text(s_loc_layer, location_layer_buffer);
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {
