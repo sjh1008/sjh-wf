@@ -15,7 +15,7 @@
 
   
 static Window *s_main_window;
-static GFont s_time_font;
+//static GFont s_time_font;
 static GFont s_weather_font;
 static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap;
@@ -194,8 +194,8 @@ default:
     t = dict_read_next(iterator);
   }
 // Assemble full string and display
-snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s, %s", temperature_buffer, conditions_buffer);
-snprintf(location_layer_buffer, sizeof(location_layer_buffer), " %s, %s, %s, %s", location_buffer, lat_buffer, long_buffer, weath_time_buffer);
+snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s, %s", lat_buffer, long_buffer);
+snprintf(location_layer_buffer, sizeof(location_layer_buffer), " %s, %s, %s, %s", location_buffer, temperature_buffer, conditions_buffer, weath_time_buffer);
 text_layer_set_text(s_weather_layer, weather_layer_buffer);
   text_layer_set_text(s_loc_layer, location_layer_buffer);
 }
@@ -244,7 +244,7 @@ static void deinit() {
     window_destroy(s_main_window);
 }
 
-int main(void) {
+void u_main() { 
   init();
   app_event_loop();
   deinit();

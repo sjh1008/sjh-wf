@@ -15,13 +15,13 @@
 
   
 static Window *s_main_window;
-static GFont s_time_font;
+//static GFont s_time_font;
 static GFont s_weather_font;
 static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap;
 static TextLayer *s_time_layer;
 static TextLayer *s_weather_layer;
-static TextLayer *s_loc_layer;
+static Layer *s_loc_layer;
 // Store incoming information
 static char temperature_buffer[8];
 static char conditions_buffer[32];
