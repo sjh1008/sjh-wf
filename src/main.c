@@ -36,10 +36,12 @@ static int longitude;
 static char longhemisphere;
 static char lathemisphere;
 static int32_t tm;
+static int32_t last_disp_tm;
 
 static void update_time() {
   // Get a tm structure
   time_t temp = time(NULL); 
+  last_disp_tm = temp;
   struct tm *tick_time = localtime(&temp);
 
   // Create a long-lived buffer
