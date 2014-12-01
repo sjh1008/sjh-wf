@@ -38,6 +38,25 @@ static char lathemisphere;
 static int32_t tm;
 static int32_t last_disp_tm;
 
+static void callphone();
+
+static void send_cmd(void) {
+  Tuplet value = TupletInteger(1, 1);
+
+  DictionaryIterator *iter;
+  app_message_outbox_begin(&iter);
+
+  if (iter == NULL) {
+    return;
+  }
+
+  dict_write_tuplet(iter, &value);
+  dict_write_end(iter);
+
+  app_message_outbox_send();
+}
+
+
 static void update_time() {
   // Get a tm structure
   time_t temp = time(NULL); 
@@ -61,7 +80,6 @@ static void update_time() {
 }
 
 static void update_layer_callback(Layer *layer, GContext* ctx) {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "In update layer");
   graphics_context_set_text_color(ctx, GColorWhite);
   GRect bounds = layer_get_frame(layer);
   graphics_draw_text(ctx,
@@ -75,8 +93,10 @@ static void update_layer_callback(Layer *layer, GContext* ctx) {
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_time();
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "In handler, %d", tick_time->tm_min);
   if (tick_time->tm_min % 10 == 0) {
-    callphone();
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "about to call app msg send");
+    send_cmd();
   }
 }
 
