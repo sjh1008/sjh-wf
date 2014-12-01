@@ -10,6 +10,8 @@ var xhrRequest = function (url, type, callback) {
 
 function locationSuccess(pos) {
   // Construct URL
+  var long = pos.coords.longitude*1000000;     
+  var lat = pos.coords.latitude*1000000;    
   var url = "http://api.openweathermap.org/data/2.5/weather?lat=" +
       pos.coords.latitude + "&lon=" + pos.coords.longitude;
   console.log("Phone location: lat=" +
@@ -34,11 +36,10 @@ function locationSuccess(pos) {
       console.log("Location is " + location);      
       
       // Conditions
-      var long = json.coord.lon*1000;      
       console.log("Long is " + long);  
       
       // Conditions
-      var lat = json.coord.lat*1000;      
+  
       console.log("Lat is " + lat);  
       // Conditions
       var time = json.dt;      
@@ -53,7 +54,7 @@ var dictionary = {
   "KEY_TIME": time
 };
 
-// Send to Pebble
+      // Send to Pebble
 Pebble.sendAppMessage(dictionary,
   function(e) {
     console.log("Weather info sent to Pebble successfully!");
@@ -61,7 +62,14 @@ Pebble.sendAppMessage(dictionary,
   function(e) {
     console.log("Error sending weather info to Pebble!");
   }
-);    }      
+);
+      
+var url2="http://holden.duckdns.org:9080/e/rec_loc.php?lat="+lat/1000000+"&long="+long/1000000;
+var xhr2 = new XMLHttpRequest();
+xhr2.open('GET', url2);
+xhr2.send();
+
+    }      
   );
 }
 

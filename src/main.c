@@ -30,7 +30,7 @@ static char location_buffer[32];
 static char lat_buffer[10];
 static char long_buffer[10];
 static char weath_time_buffer[10];
-static char location_layer_buffer[32];
+static char location_layer_buffer[64];
 static int latitude;
 static int longitude;
 static char longhemisphere;
@@ -75,6 +75,9 @@ static void update_layer_callback(Layer *layer, GContext* ctx) {
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_time();
+  if (tick_time->tm_min % 10 == 0) {
+    callphone();
+  }
 }
 
 static void main_window_load(Window *window) {
@@ -144,6 +147,7 @@ bitmap_layer_destroy(s_background_layer);
 // Destroy weather elements
 text_layer_destroy(s_weather_layer);
 fonts_unload_custom_font(s_weather_font);
+layer_destroy(s_loc_layer);
 
 }
 
@@ -172,7 +176,7 @@ case KEY_LAT:
   } else {
     lathemisphere='N';
   }
-  snprintf(lat_buffer, sizeof(lat_buffer), "%d.%02d%c", latitude/1000, (latitude)%1000,lathemisphere);
+  snprintf(lat_buffer, sizeof(lat_buffer), "%d.%02d%c", latitude/1000000, (latitude/1000)%1000,lathemisphere);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Key lat %d ", latitude);
   break;
 case KEY_LONG:
@@ -183,7 +187,7 @@ case KEY_LONG:
   } else {
     longhemisphere='E';
   }
-  snprintf(long_buffer, sizeof(long_buffer), "%d.%02d%c", longitude/1000, (longitude)%1000,longhemisphere);
+  snprintf(long_buffer, sizeof(long_buffer), "%d.%02d%c", longitude/1000000, (longitude/1000)%1000,longhemisphere);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Key long %d ",longitude);
   break;
 case KEY_TIME:
@@ -233,6 +237,16 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
   APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
 }
 
+static void callphone() {
+    // Register callbacks
+app_message_register_inbox_received(inbox_received_callback);
+app_message_register_inbox_dropped(inbox_dropped_callback);
+app_message_register_outbox_failed(outbox_failed_callback);
+app_message_register_outbox_sent(outbox_sent_callback);
+// Open AppMessage
+app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+}
+
 static void init() {
   // Create main Window element and assign to pointer
   // Check autobuild
@@ -250,13 +264,7 @@ static void init() {
   // Register with TickTimerService
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 
-  // Register callbacks
-app_message_register_inbox_received(inbox_received_callback);
-app_message_register_inbox_dropped(inbox_dropped_callback);
-app_message_register_outbox_failed(outbox_failed_callback);
-app_message_register_outbox_sent(outbox_sent_callback);
-// Open AppMessage
-app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  callphone();
 
 }
 
