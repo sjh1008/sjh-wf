@@ -11,10 +11,15 @@
         "location"
     ],
     "companyName": "Steve Testing",
-    "longName": "sjh-pebbleWf-weather",
+    "longName": "sjh-Wf-weather",
     "projectType": "native",
     "resources": {
         "media": [
+            {
+                "file": "images/background.png",
+                "name": "IMG_BACKGROUND",
+                "type": "png"
+            },
             {
                 "characterRegex": "[:0-9]",
                 "file": "fonts/big.ttf",
@@ -26,11 +31,6 @@
                 "file": "fonts/big.ttf",
                 "name": "FONT_PERFECT_DOS_48",
                 "type": "font"
-            },
-            {
-                "file": "images/background.png",
-                "name": "IMG_BACKGROUND",
-                "type": "png"
             }
         ]
     },
