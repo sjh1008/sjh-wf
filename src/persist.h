@@ -1,8 +1,8 @@
 #pragma once
 
 typedef struct {
-	char weath_str[10];
-	char location_str[32];
+	char weath_str[32];
+	char location_str[64];
 	int32_t last_display_time;
 } AppState;
 

@@ -16,7 +16,7 @@
 
 static Window *s_main_window;
 //static GFont s_time_font;
-static GFont s_weather_font;
+//static GFont s_weather_font;
 static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap;
 static TextLayer *s_time_layer;
@@ -35,6 +35,7 @@ static int latitude;
 static int longitude;
 static char longhemisphere;
 static char lathemisphere;
+static char connected;
 static int32_t tm;
 static int32_t last_disp_tm;
 
@@ -76,12 +77,16 @@ char *translate_error(AppMessageResult result) {
   }
 }
 
+static void set_connected() {
+	connected = bluetooth_connection_service_peek() ? 'C' : 'N'; 
+}
 
 static void update_time() {
 	// Get a tm structure
 	time_t temp = time(NULL);
 	last_disp_tm = temp;
 	struct tm *tick_time = localtime(&temp);
+
 
 	// Create a long-lived buffer
 	static char buffer[] = "00:00";
@@ -95,6 +100,7 @@ static void update_time() {
 		strftime(buffer, sizeof("00:00"), "%I:%M", tick_time);
 	}
 
+	set_connected();
 	// Display this time on the TextLayer
 	text_layer_set_text(s_time_layer, buffer);
 }
@@ -111,10 +117,10 @@ static void update_layer_callback(Layer *layer, GContext* ctx) {
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 	update_time();
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "In handler, %d", tick_time->tm_min);
-	if (tick_time->tm_min % 3  == 0) {
+	//if (tick_time->tm_min % 3  == 0) {
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "about to call app msg send");
 		send_cmd();
-	}
+	//}
 }
 
 static void main_window_load(Window *window) {
@@ -173,20 +179,26 @@ static void main_window_load(Window *window) {
 	layer_add_child(window_get_root_layer(window),
 			text_layer_get_layer(s_weather_layer));
 
+
 	// Make sure the time is displayed from the start
 	update_time();
+	text_layer_set_text(s_weather_layer, weather_layer_buffer);
+	//text_layer_set_text(s_loc_layer, location_layer_buffer);
 }
 
 static void main_window_unload(Window *window) {
 // Destroy GBitmap
 	gbitmap_destroy(s_background_bitmap);
-
+	// APP_LOG(APP_LOG_LEVEL_DEBUG, "after gbitmap destroy");
 // Destroy BitmapLayer
 	bitmap_layer_destroy(s_background_layer);
+	//APP_LOG(APP_LOG_LEVEL_DEBUG, "after bitmap layer destroy");
 
 // Destroy weather elements
 	text_layer_destroy(s_weather_layer);
-	fonts_unload_custom_font(s_weather_font);
+	//APP_LOG(APP_LOG_LEVEL_DEBUG, "after text layer destroy");
+	//fonts_unload_custom_font(s_weather_font);
+	//APP_LOG(APP_LOG_LEVEL_DEBUG, "after weather layer destroy");
 	layer_destroy(s_loc_layer);
 
 }
@@ -269,10 +281,11 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 		t = dict_read_next(iterator);
 	}
 // Assemble full string and display
+	set_connected();
 	snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s, %s",
 			temperature_buffer, conditions_buffer);
 	snprintf(location_layer_buffer, sizeof(location_layer_buffer),
-			" %s, %s, %s, %s", location_buffer, lat_buffer, long_buffer,
+			"%c, %s, %s, %s, %s", connected, location_buffer, lat_buffer, long_buffer,
 			weath_time_buffer);
 	text_layer_set_text(s_weather_layer, weather_layer_buffer);
 	//text_layer_set_text(s_loc_layer, location_layer_buffer);
@@ -315,6 +328,8 @@ static void init() {
 				.unload = main_window_unload
 			});
 
+	set_connected();
+
 	// Show the Window on the watch, with animated=true
 	window_stack_push(s_main_window, true);
 
@@ -326,16 +341,17 @@ static void init() {
 }
 
 static void deinit() {
-	//persist_state(weather_layer_buffer, location_layer_buffer, last_disp_tm);
+	persist_state(weather_layer_buffer, location_layer_buffer, last_disp_tm);
 	// Destroy Window
 	window_destroy(s_main_window);
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "Finished destroy");
 }
 
 int main(void) {
-	//AppState st = restore_state();
-	//strcpy(location_buffer,st.location_str);
-	//strcpy(weather_layer_buffer,st.weath_str);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Location %s weather %s ", location_buffer, weather_layer_buffer);
+	AppState st = restore_state();
+	strncpy(location_layer_buffer,st.location_str, sizeof(location_layer_buffer));
+	strncpy(weather_layer_buffer,st.weath_str, sizeof(weather_layer_buffer));
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Location '%s' weather '%s' ", location_buffer, weather_layer_buffer);
 	init();
 	app_event_loop();
 	deinit();

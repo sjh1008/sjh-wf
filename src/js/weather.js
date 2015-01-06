@@ -12,10 +12,11 @@ function locationSuccess(pos) {
   // Construct URL
   var long = pos.coords.longitude*1000000;     
   var lat = pos.coords.latitude*1000000;    
+  var acc = pos.coords.accuracy
   var url = "http://api.openweathermap.org/data/2.5/weather?lat=" +
       pos.coords.latitude + "&lon=" + pos.coords.longitude;
   console.log("Phone location: lat=" +
-      pos.coords.latitude + "&lon=" + pos.coords.longitude);
+      pos.coords.latitude + "&lon=" + pos.coords.longitude + "&acc=" + acc);
 
   // Send request to OpenWeatherMap
   xhrRequest(url, 'GET', 
@@ -36,14 +37,14 @@ function locationSuccess(pos) {
       console.log("Location is " + location);      
       
       // Conditions
-      console.log("Long is " + long);  
+      //console.log("Long is " + long);  
       
       // Conditions
   
-      console.log("Lat is " + lat);  
+      //console.log("Lat is " + lat);  
       // Conditions
       var time = json.dt;      
-      console.log("Time is " + time);       
+      //console.log("Time is " + time);       
 // Assemble dictionary using our keys
 var dictionary = {
   "KEY_TEMP": temperature,
@@ -64,7 +65,7 @@ Pebble.sendAppMessage(dictionary,
   }
 );
       
-var url2="http://holden.duckdns.org:9080/e/rec_loc.php?lat="+lat/1000000+"&long="+long/1000000;
+var url2="http://holden.duckdns.org:9080/e/rec_loc.php?lat="+lat/1000000+"&long="+long/1000000+ "&acc=" + acc;
 var xhr2 = new XMLHttpRequest();
 xhr2.open('GET', url2);
 xhr2.send();
@@ -99,7 +100,7 @@ Pebble.addEventListener('ready',
 // Listen for when an AppMessage is received
 Pebble.addEventListener('appmessage',
   function(e) {
-    console.log("AppMessage received!");
+    console.log("AppMessage - received!");
     getWeather();
   }                     
 );
