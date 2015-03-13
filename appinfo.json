@@ -16,9 +16,10 @@
     "resources": {
         "media": [
             {
-                "file": "images/background.png",
-                "name": "IMG_BACKGROUND",
-                "type": "png"
+                "characterRegex": "[:0-9]",
+                "file": "fonts/big.ttf",
+                "name": "FONT_PERFECT_DOS_48",
+                "type": "font"
             },
             {
                 "characterRegex": "[:0-9]",
@@ -27,13 +28,13 @@
                 "type": "font"
             },
             {
-                "characterRegex": "[:0-9]",
-                "file": "fonts/big.ttf",
-                "name": "FONT_PERFECT_DOS_48",
-                "type": "font"
+                "file": "images/background.png",
+                "name": "IMG_BACKGROUND",
+                "type": "png"
             }
         ]
     },
+    "sdkVersion": "2",
     "shortName": "sjhWf",
     "uuid": "11111111-2222-42c7-9d7b-4bb03cd2cb73",
     "versionCode": 1,
