@@ -78,7 +78,8 @@ char *translate_error(AppMessageResult result) {
 }
 
 static void set_connected() {
-	connected = bluetooth_connection_service_peek() ? 'C' : 'N'; 
+  connected = 'X';
+	//connected = bluetooth_connection_service_peek() ? 'C' : 'N'; 
 }
 
 static void update_time() {
@@ -117,10 +118,10 @@ static void update_layer_callback(Layer *layer, GContext* ctx) {
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 	update_time();
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "In handler, %d", tick_time->tm_min);
-	//if (tick_time->tm_min % 3  == 0) {
+	if (tick_time->tm_min % 5  == 0) {
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "about to call app msg send");
 		send_cmd();
-	//}
+	}
 }
 
 static void main_window_load(Window *window) {
@@ -284,8 +285,11 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 	set_connected();
 	snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s, %s",
 			temperature_buffer, conditions_buffer);
+//	snprintf(location_layer_buffer, sizeof(location_layer_buffer),
+//			"%c, %s, %s, %s, %s", connected, location_buffer, lat_buffer, long_buffer,
+//			weath_time_buffer);
 	snprintf(location_layer_buffer, sizeof(location_layer_buffer),
-			"%c, %s, %s, %s, %s", connected, location_buffer, lat_buffer, long_buffer,
+			"%s, %s, %s, %s", location_buffer, lat_buffer, long_buffer,
 			weath_time_buffer);
 	text_layer_set_text(s_weather_layer, weather_layer_buffer);
 	//text_layer_set_text(s_loc_layer, location_layer_buffer);

@@ -7,13 +7,43 @@ var xhrRequest = function (url, type, callback) {
   xhr.send();
 };
 
+function lookupTrains() {
+  var from = "EUS";
+  var to = "TRI";
+  var url = "<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:typ=\"http://thalesgroup.com/RTTI/2013-11-28/Token/types\" xmlns:ldb=\"http://thalesgroup.com/RTTI/2014-02-20/ldb/\">"+
+   "<soap:Header>"+
+   "<typ:AccessToken>"+
+         "<typ:TokenValue>b96cdc35-fa1e-4791-9358-7c2ba1d3bedc</typ:TokenValue>"+
+      "</typ:AccessToken>"+
+   "</soap:Header>"+
+   "<soap:Body>"+
+      "<ldb:GetDepartureBoardRequest>"+
+         "<ldb:numRows>5</ldb:numRows>"+
+         "<ldb:crs>"+from+"</ldb:crs>"+
+         "<ldb:filterCrs>"+to+"</ldb:filterCrs>"+
+         "<ldb:filterType>to</ldb:filterType>"+
+         "<ldb:timeOffset>0</ldb:timeOffset>"+
+         "<ldb:timeWindow>120</ldb:timeWindow>"+
+      "</ldb:GetDepartureBoardRequest>"+
+   "</soap:Body>"+
+"</soap:Envelope>";
+  console.log("SOAP req" + url);
+  xhrRequest(url, 'GET', 
+    function(responseText) {
+            console.log("SOAP resp" + responseText);
+      // responseText contains a JSON object with weather info
+      var json = JSON.parse(responseText);
+      console.log("parsed:"+json);
+      });
+}
 
+             
 function locationSuccess(pos) {
   // Construct URL
   var long = pos.coords.longitude*1000000;     
   var lat = pos.coords.latitude*1000000;    
-  var acc = pos.coords.accuracy
-  var url = "http://api.openweathermap.org/data/2.5/weather?lat=" +
+  var acc = pos.coords.accuracy;
+  var url = "http://api.openweathermap.org/data/2.5/weather?appid=0ad42e271b4629fd1bf38dd7d09e7d99&lat=" +
       pos.coords.latitude + "&lon=" + pos.coords.longitude;
   console.log("Phone location: lat=" +
       pos.coords.latitude + "&lon=" + pos.coords.longitude + "&acc=" + acc);
@@ -37,11 +67,11 @@ function locationSuccess(pos) {
       console.log("Location is " + location);      
       
       // Conditions
-      //console.log("Long is " + long);  
+      console.log("Long is " + long);  
       
       // Conditions
   
-      //console.log("Lat is " + lat);  
+      console.log("Lat is " + lat);  
       // Conditions
       var time = json.dt;      
       //console.log("Time is " + time);       
@@ -75,14 +105,14 @@ xhr2.send();
 }
 
 function locationError(err) {
-  console.log("Error requesting location!");
+  console.warn('Location error (' + err.code + '): ' + err.message);
 }
 
 function getWeather() {
   navigator.geolocation.getCurrentPosition(
     locationSuccess,
     locationError,
-    {timeout: 15000, maximumAge: 60000}
+    {enableHighAccuracy:true, timeout: 15000, maximumAge: 6000000}
   );
 }
 
@@ -100,7 +130,8 @@ Pebble.addEventListener('ready',
 // Listen for when an AppMessage is received
 Pebble.addEventListener('appmessage',
   function(e) {
-    console.log("AppMessage - received!");
+    console.log("AppMessage now received!");
+    //lookupTrains();
     getWeather();
   }                     
 );

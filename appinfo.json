@@ -16,6 +16,11 @@
     "resources": {
         "media": [
             {
+                "file": "images/background.png",
+                "name": "IMG_BACKGROUND",
+                "type": "bitmap"
+            },
+            {
                 "characterRegex": "[:0-9]",
                 "file": "fonts/big.ttf",
                 "name": "FONT_PERFECT_DOS_48",
@@ -26,18 +31,15 @@
                 "file": "fonts/big.ttf",
                 "name": "FONT_PERFECT_DOS_20",
                 "type": "font"
-            },
-            {
-                "file": "images/background.png",
-                "name": "IMG_BACKGROUND",
-                "type": "png"
             }
         ]
     },
-    "sdkVersion": "2",
+    "sdkVersion": "3",
     "shortName": "sjhWf",
+    "targetPlatforms": [
+        "aplite"
+    ],
     "uuid": "11111111-2222-42c7-9d7b-4bb03cd2cb73",
-    "versionCode": 1,
     "versionLabel": "1.0",
     "watchapp": {
         "watchface": true
